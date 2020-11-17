@@ -26,4 +26,9 @@ For this project I decided to use <a href="https://github.com/facebookresearch/d
 In order to train an object detection model, Detectron2 requires the coordinates of the bounding boxes of the objects to detect.  It also expects a single entry per image, as opposed to the multiple rows of the original CSV file.  Through some code, I took the CSV file and built out a JSON file which converted the run length encoded pixels from the original data and turned them into a list of bounding box coordinates.
 
 <h3>Training The Prototype</h3>
-With the data in a format usable by Detectron2, training became a fairly simple matter
+With the data in a format usable by Detectron2, training became a fairly simple matter.  Some fiddling with the configuration was required to account for the data and the environment (Google Colab) but beyond that Detectron2 handled everything well.
+<br /><br />
+When scaling the prototype, one issue was discovered and that was that the sheer quantity of data (>192k images) could cause unpredictable behavior with Colab when it is all in one folder.  I resolved this issue by dividing up the image files into separate folders of no more than 1000 images per folder.  I had to adjust my JSON data file to also contain the new full path to the image file.  Aside from this, scaling was not an issue.
+<br /><br />
+Here is a graph of the AP (Average Precision) improving over the training period:
+
