@@ -7,7 +7,7 @@ All data used in this project was acquired from the Kaggle challenge.  It consis
 <br /><br />
 I decided to store the training data in my Google Drive storage, as I had intended to use Google Colab for training of the prototype.  Drive and Colab are integrated which made making the training data available to the machine learning software a simple matter.
 
-<h3>Data Exploration.</h3>
+<h3>Data Exploration</h3>
 Like I stated above, the data comes in two parts: many images and a CSV file detailing where the ships are in those images.  The images are self-explanatory, though the fact that they were all of uniform size was very convenient and spared me from having to make different sizes and shapes a consideration during the training phase.  The images themselves can be quite varied in appearance, with different environments seen in them from open water to beaches, canals, and harbors.  The water seen in the images can also be very different from one image to the next, with different colors and levels of choppiness making the apperance quite varied.  The images themselves also seem to have been taken at different altitudes and have varying levels of image quality.  Cloud coverage can be seen in some images, adding an additional variable into the mix.  These variations will be very helpful in training the model to generalize for different conditions.
 <br /><br />
 Here are some examples of the variations in the images:
@@ -19,3 +19,11 @@ Here are some examples of the variations in the images:
 The CSV file has two columns: the first column (ImageId) has the file name of the image, and the second column (EncodedPixels) has either a run length encoded string that describes what pixels in the image make up a single ship in that image or it has a value of NaN in the event that the image has no ships in it.  If there is a ship or multiple ships in an image, there will be a row in the CSV file for each ship in that image.
 <br /><br />
 In my exploration of the training dataset, I could see that of the >192k images there were 150k images that contained no ships at all.  Comparing this to the >230k rows in the CSV file, I could determine that there were >80k ships in >42k images that contained ships.
+
+<h3>Preparing For Prototype Training</h3>
+For this project I decided to use <a href="https://github.com/facebookresearch/detectron2">Facebook's Detectron2</a> to build my object detection model.  In my attempts to train a model with Detectron2, however, I did discover that the data I had would require some transformation in order to make it usable to the software.
+<br /><br />
+In order to train an object detection model, Detectron2 requires the coordinates of the bounding boxes of the objects to detect.  It also expects a single entry per image, as opposed to the multiple rows of the original CSV file.  Through some code, I took the CSV file and built out a JSON file which converted the run length encoded pixels from the original data and turned them into a list of bounding box coordinates.
+
+<h3>Training The Prototype</h3>
+With the data in a format usable by Detectron2, training became a fairly simple matter
