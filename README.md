@@ -14,3 +14,8 @@ Here are some examples of the variations in the images:
 <img src="https://drive.google.com/uc?export=view&id=1PancEx3XY3Vqp6-JH9faP98R0h-2cEB0" width="200" height="200" />
 <img src="https://drive.google.com/uc?export=view&id=1bfGzFSyhaS0CECkTUxPIvVLKwBZEcnPb" width="200" height="200" />
 <img src="https://drive.google.com/uc?export=view&id=1jVwyeT77yTrZ13XrHVB9Lxv2hsd56UXM" width="200" height="200" />
+
+<br />
+The CSV file has two columns: the first column (ImageId) has the file name of the image, and the second column (EncodedPixels) has either a run length encoded string that describes what pixels in the image make up a single ship in that image or it has a value of NaN in the event that the image has no ships in it.  If there is a ship or multiple ships in an image, there will be a row in the CSV file for each ship in that image.
+<br /><br />
+In my exploration of the training dataset, I could see that of the >192k images there were 150k images that contained no ships at all.  Comparing this to the >230k rows in the CSV file, I could determine that there were >80k ships in >42k images that contained ships.
