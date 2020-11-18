@@ -28,7 +28,7 @@ In order to train an object detection model, Detectron2 requires the coordinates
 <h3>Training The Prototype</h3>
 With the data in a format usable by Detectron2, training became a fairly simple matter.  Some fiddling with the configuration was required to account for the data and the environment (Google Colab) but beyond that Detectron2 handled everything well.
 <br /><br />
-When scaling the prototype, one issue was discovered and that was that the sheer quantity of data (>192k images) could cause unpredictable behavior with Colab when it is all in one folder.  I resolved this issue by dividing up the image files into separate folders of no more than 1000 images per folder.  I had to adjust my JSON data file to also contain the new full path to the image file.  Aside from this, scaling was not an issue.
+When scaling the prototype, one issue I discovered was that the sheer quantity of data (>192k images) could cause unpredictable behavior with Colab when it is all in one folder.  I resolved this issue by dividing up the image files into separate folders of no more than 1000 images per folder.  I had to adjust my JSON data file to also contain the new full path to the image file.  Aside from this, scaling was not an issue.
 <br /><br />
 Here is a graph of the AP (Average Precision) improving over the training period:
 <img src="https://drive.google.com/uc?export=view&id=1-nCT7wSMwLrbKH5tEPYAXvjfsluXB4Wo" />
@@ -45,4 +45,16 @@ Took a slice of an image, to see how the predictor can handle a different size a
 Surrounded by land.
 <img src="https://drive.google.com/uc?export=view&id=1ZABRp3VbWSPU0FKYVEy11GwEwOPd-Nb7" width="300" height="300" />
 
-<h3>Building the API</h3>
+<h3>Building The Application</h3>
+Now that the model has been trained, I have completed the most challenging part of the project.  Next step is to make the model more accessible.  I did this by making a RESTful application that allows users to submit their images and receive in return the model's object detection predictions.
+<br /><br />
+There are two main components to the application: the API and the predictor.  The API has been built using the FastAPI library.  Using this library, it was very quick and simple to make an API endpoint.  This endpoint accepts POST queries and expects them to arrive as form data with the image file to be processed sent as a parameter named 'file'.  If these conditions are met, the API passes the image to the predictor code for it to process through the model.  That code should then return a new image to the API, which the API then converts into a file stream to return to the end user.
+<br /><br />
+The predictor portion of the code uses the Predictor and Visualizer modules from Detectron2 to make use of the trained model.  When an image is passed into the predictor, a Detectron2 DefaultPredictor is instantiated and configured to use the trained model as its weights.  The input image is passed through this DefaultPredictor to get the model's predictions.  These results are then fed into the Detectron2 Visualizer to have the predictions labelled directly onto the input image.  This new image is then returned to the API so that it can be provided to the end user.
+<br /><br />
+Once successfully deployed, this API can be used by, as stated earlier, submitting a POST command to the address {server IP address and port}/detect_ships.
+
+<h3>Deployment</h3>
+The final step for the project is to put it all together for easy deployment.  For this I built a docker image using 'python:3.6.12-slim-buster' as the base.  The following actions in the Dockerfile add in the various components and python modules that the application requires to run.  Ultimately, the image should expose port 8888 and then start up a uvicorn web server to host the API.  This docker image can be found on Docker Hub at jdnielsen/ship_detection_api.
+<br /><br />
+With the Docker image, deployment to any server or cloud service with Docker installed and running should be a simple matter.  I have successfully tested this on Paperspace.
