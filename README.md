@@ -11,9 +11,9 @@ I decided to store the training data in my Google Drive storage, as I had intend
 Like I stated above, the data comes in two parts: many images and a CSV file detailing where the ships are in those images.  The images are self-explanatory, though the fact that they were all of uniform size was very convenient and spared me from having to make different sizes and shapes a consideration during the training phase.  The images themselves can be quite varied in appearance, with different environments seen in them from open water to beaches, canals, and harbors.  The water seen in the images can also be very different from one image to the next, with different colors and levels of choppiness making the apperance quite varied.  The images themselves also seem to have been taken at different altitudes and have varying levels of image quality.  Cloud coverage can be seen in some images, adding an additional variable into the mix.  These variations will be very helpful in training the model to generalize for different conditions.
 <br /><br />
 Here are some examples of the variations in the images:
-<img src="https://drive.google.com/uc?export=view&id=1PancEx3XY3Vqp6-JH9faP98R0h-2cEB0" width="200" height="200" />
-<img src="https://drive.google.com/uc?export=view&id=1bfGzFSyhaS0CECkTUxPIvVLKwBZEcnPb" width="200" height="200" />
-<img src="https://drive.google.com/uc?export=view&id=1jVwyeT77yTrZ13XrHVB9Lxv2hsd56UXM" width="200" height="200" />
+<img src="https://drive.google.com/uc?export=view&id=1PancEx3XY3Vqp6-JH9faP98R0h-2cEB0" width="300" height="300" />
+<img src="https://drive.google.com/uc?export=view&id=1bfGzFSyhaS0CECkTUxPIvVLKwBZEcnPb" width="300" height="300" />
+<img src="https://drive.google.com/uc?export=view&id=1jVwyeT77yTrZ13XrHVB9Lxv2hsd56UXM" width="300" height="300" />
 
 <br />
 The CSV file has two columns: the first column (ImageId) has the file name of the image, and the second column (EncodedPixels) has either a run length encoded string that describes what pixels in the image make up a single ship in that image or it has a value of NaN in the event that the image has no ships in it.  If there is a ship or multiple ships in an image, there will be a row in the CSV file for each ship in that image.
@@ -31,4 +31,18 @@ With the data in a format usable by Detectron2, training became a fairly simple 
 When scaling the prototype, one issue was discovered and that was that the sheer quantity of data (>192k images) could cause unpredictable behavior with Colab when it is all in one folder.  I resolved this issue by dividing up the image files into separate folders of no more than 1000 images per folder.  I had to adjust my JSON data file to also contain the new full path to the image file.  Aside from this, scaling was not an issue.
 <br /><br />
 Here is a graph of the AP (Average Precision) improving over the training period:
+<img src="https://drive.google.com/uc?export=view&id=1-nCT7wSMwLrbKH5tEPYAXvjfsluXB4Wo" />
+I had configured the trainer to save checkpoints every 2000 iterations.  Looking at the AP chart, it appears to level off at around 30 thousand iterations, so I took the checkpoint with 30 thousand iterations going forward.  Using this model, I can run images through the predictor to see how it does.  Here are some examples:
+<br />
+A basic example with two ships.
+<img src="https://drive.google.com/uc?export=view&id=1MAK6hwGCGNZksQnj9y5oo8md4m-1ENUb" width="300" height="300" />
+Smaller ships near land (Liberty Island!).
+<img src="https://drive.google.com/uc?export=view&id=1zLYQrIKcfFR1lLm96RnRXX2S9eTpWnSW" width="300" height="300" />
+Radically different water color, and the ship is only partly in the image.
+<img src="https://drive.google.com/uc?export=view&id=1lxAixJ0torrB_cfUFecdqglwNt_rebW9" width="300" height="300" />
+Took a slice of an image, to see how the predictor can handle a different size and shape image.
+<img src="https://drive.google.com/uc?export=view&id=1pNpz9flPiFHLsAJ3T02itTvNr9Aob1UM" width="250" height="129" />
+Surrounded by land.
+<img src="https://drive.google.com/uc?export=view&id=1ZABRp3VbWSPU0FKYVEy11GwEwOPd-Nb7" width="300" height="300" />
 
+<h3>Building the API</h3>
